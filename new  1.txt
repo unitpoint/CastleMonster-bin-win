@@ -1,0 +1,17 @@
+1045-1168-9533-9244-9897-7696
+
+CastleMonster OS2D #Android #opensource #видео #поиск пути #требуется геймдизайнер
+
+[b]CastleMonster OS2D[/b]
+
+[https://github.com/unitpoint/CastleMonster]CastleMonster OS2D[/url] - игра в стиле старой школы (немного пиксельарта) на тему "убей всех монстров". Под андроид, но там по ходу 
+
+На проект требуется геймдизайнер (обращайтесь любым удобным вам способом, желательно в скайп egolovin).
+
+Проект [https://github.com/unitpoint/CastleMonster]opensource[/url], делается на движке [url=https://github.com/unitpoint/os2d]OS2D[/url]. Т.к. это бесплатный проект с открытым исходным кодом, то любой желающий может взять все и выпустить свой проект на основе этого.
+
+В данный момент я пишу ядро игры, в частности поиск путей для движения монстров. По плану они будут бегать за игроком и нападать на него, ну а игрок будет их убивать. Оценить то, что из этого получается можно на след. видео:
+
+[youtube=a4afnUWjVR4]
+
+P.S. Исходники на скриптовом языке [url=http://objectscript.org]ObjectScript[/url] находятся тут (см. *.os): https://github.com/unitpoint/CastleMonster/tree/master/data

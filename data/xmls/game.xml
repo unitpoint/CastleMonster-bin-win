@@ -1,0 +1,97 @@
+<?xml version="1.0"?>
+<resources>
+	<set path = "../data_debug/images/" />
+	<atlas>
+		<image file="joystick.png" />
+		<image file="finger.png" />
+		<image id="players/1" file="players/1.png" cols="20" />
+		<image id="players/2" file="players/2.png" cols="20" />
+		<image id="players/3" file="players/3.png" cols="20" />
+		<image id="players/4" file="players/4.png" cols="20" />
+		<image file="blood-player.png" cols="4" rows="4" />
+		<image file="blood-monster.png" cols="4" rows="4" />
+		<image file="breaks.png" />
+		<image file="scratch.png" />
+		<image file="dot.png" />
+		
+		<image id="monsters/zmeyacherepaha" file="monsters/zmeyacherepaha.png" cols="20" />
+		<image id="monsters/wood_elf" file="monsters/wood_elf.png" cols="20" />
+		<image id="monsters/white_wolf" file="monsters/white_wolf.png" cols="20" />
+		<image id="monsters/twinkle" file="monsters/twinkle.png" cols="20" />
+		<image id="monsters/strekoza_cherep" file="monsters/strekoza_cherep.png" cols="20" />
+		<image id="monsters/skalapendra" file="monsters/skalapendra.png" cols="20" />
+		<image id="monsters/serenivii" file="monsters/serenivii.png" cols="20" />
+		<image id="monsters/pumpkin" file="monsters/pumpkin.png" cols="20" />
+		<image id="monsters/mountain_pangolin" file="monsters/mountain_pangolin.png" cols="20" />
+		<image id="monsters/little_lemon" file="monsters/little_lemon.png" cols="20" />
+		<image id="monsters/lion_salamandra" file="monsters/lion_salamandra.png" cols="20" />
+		<image id="monsters/gryaz" file="monsters/gryaz.png" cols="20" />
+		<image id="monsters/fishmen" file="monsters/fishmen.png" cols="20" />
+		<image id="monsters/firicrazy" file="monsters/firicrazy.png" cols="20" />
+		<image id="monsters/carnivorous_flower" file="monsters/carnivorous_flower.png" cols="20" />
+		<image id="monsters/blue_bug" file="monsters/blue_bug.png" cols="20" />
+		<image id="monsters/arbyz" file="monsters/arbyz.png" cols="20" />
+		
+		<image id="weapons/1" file="weapons/1.png" cols="2" />
+		<image id="weapons/10" file="weapons/10.png" cols="2" />
+		<image id="weapons/11" file="weapons/11.png" cols="2" />
+		<image id="weapons/12" file="weapons/12.png" cols="2" />
+		<image id="weapons/13" file="weapons/13.png" cols="2" />
+		<image id="weapons/14" file="weapons/14.png" cols="2" />
+		<image id="weapons/15" file="weapons/15.png" cols="2" />
+		<image id="weapons/16" file="weapons/16.png" cols="2" />
+		<image id="weapons/17" file="weapons/17.png" cols="2" />
+		<image id="weapons/18" file="weapons/18.png" cols="2" />
+		<image id="weapons/19" file="weapons/19.png" cols="2" />
+		<image id="weapons/2" file="weapons/2.png" cols="2" />
+		<image id="weapons/20" file="weapons/20.png" cols="2" />
+		<image id="weapons/21" file="weapons/21.png" cols="2" />
+		<image id="weapons/22" file="weapons/22.png" cols="2" />
+		<image id="weapons/23" file="weapons/23.png" cols="2" />
+		<image id="weapons/24" file="weapons/24.png" cols="2" />
+		<image id="weapons/25" file="weapons/25.png" cols="2" />
+		<image id="weapons/26" file="weapons/26.png" cols="2" />
+		<image id="weapons/27" file="weapons/27.png" cols="2" />
+		<image id="weapons/28" file="weapons/28.png" cols="2" />
+		<image id="weapons/29" file="weapons/29.png" cols="2" />
+		<image id="weapons/3" file="weapons/3.png" cols="2" />
+		<image id="weapons/30" file="weapons/30.png" cols="2" />
+		<image id="weapons/31" file="weapons/31.png" cols="2" />
+		<image id="weapons/32" file="weapons/32.png" cols="2" />
+		<image id="weapons/33" file="weapons/33.png" cols="2" />
+		<image id="weapons/34" file="weapons/34.png" cols="2" />
+		<image id="weapons/35" file="weapons/35.png" cols="2" />
+		<image id="weapons/36" file="weapons/36.png" cols="2" />
+		<image id="weapons/37" file="weapons/37.png" cols="2" />
+		<image id="weapons/38" file="weapons/38.png" cols="2" />
+		<image id="weapons/39" file="weapons/39.png" cols="2" />
+		<image id="weapons/4" file="weapons/4.png" cols="2" />
+		<image id="weapons/40" file="weapons/40.png" cols="2" />
+		<image id="weapons/41" file="weapons/41.png" cols="2" />
+		<image id="weapons/42" file="weapons/42.png" cols="2" />
+		<image id="weapons/43" file="weapons/43.png" cols="2" />
+		<image id="weapons/44" file="weapons/44.png" cols="2" />
+		<image id="weapons/45" file="weapons/45.png" cols="2" />
+		<image id="weapons/46" file="weapons/46.png" cols="2" />
+		<image id="weapons/47" file="weapons/47.png" cols="2" />
+		<image id="weapons/48" file="weapons/48.png" cols="2" />
+		<image id="weapons/49" file="weapons/49.png" cols="2" />
+		<image id="weapons/5" file="weapons/5.png" cols="2" />
+		<image id="weapons/50" file="weapons/50.png" cols="2" />
+		<image id="weapons/51" file="weapons/51.png" cols="2" />
+		<image id="weapons/52" file="weapons/52.png" cols="2" />
+		<image id="weapons/53" file="weapons/53.png" cols="2" />
+		<image id="weapons/54" file="weapons/54.png" cols="2" />
+		<image id="weapons/55" file="weapons/55.png" cols="2" />
+		<image id="weapons/56" file="weapons/56.png" cols="2" />
+		<image id="weapons/6" file="weapons/6.png" cols="2" />
+		<image id="weapons/7" file="weapons/7.png" cols="2" />
+		<image id="weapons/8" file="weapons/8.png" cols="2" />
+		<image id="weapons/9" file="weapons/9.png" cols="2" />
+		
+	</atlas>
+
+	<set path = "../data_debug/fonts/" />
+	<font file="normal.fnt"/>
+	<font id="big" file="huge.fnt"/>
+</resources>

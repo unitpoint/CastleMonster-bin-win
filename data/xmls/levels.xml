@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<resources>
+	<set path = "../" />
+	<atlas>
+		<image file="data_debug/images/level-0.jpg" />
+	</atlas>
+	<atlas>
+		<image file="data_debug/images/level-1.png" />
+	</atlas>
+	<atlas>
+		<image file="data_debug/images/level-2.png" />
+	</atlas>
+	<atlas>
+		<image file="data_debug/images/level-3.jpg" />
+	</atlas>
+	<atlas>
+		<image file="data_debug/images/level-4.jpg" />
+	</atlas>
+	<atlas>
+		<image file="data_debug/images/level-5.jpg" />
+	</atlas>
+	<atlas>
+		<image file="data_debug/images/level-6.jpg" />
+	</atlas>
+	<atlas>
+		<image file="data_debug/images/level-7.jpg" />
+	</atlas>
+</resources>
