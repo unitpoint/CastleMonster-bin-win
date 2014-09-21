@@ -13,6 +13,10 @@
 		<image file="breaks.png" />
 		<image file="scratch.png" />
 		<image file="dot.png" />
+		<image file="player-hud-face.png" cols="5" rows="5" />
+		<image file="player-hud-armor.png" />
+		<image file="hud-bar-bg.png" />
+		<image file="hud-bar-fill.png" />
 		
 		<image id="monsters/zmeyacherepaha" file="monsters/zmeyacherepaha.png" cols="20" />
 		<image id="monsters/wood_elf" file="monsters/wood_elf.png" cols="20" />

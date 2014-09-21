@@ -24,7 +24,7 @@ function randItem(items){
 	if(arrayOf(items)){
 		return items[math.random(#items)]
 	}
-	if(objectOf(items)){
+	if(items.prototype === Object){
 		var keys = items.keys
 		return items[keys[math.random(#keys)]]
 	}

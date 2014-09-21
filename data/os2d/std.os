@@ -542,6 +542,17 @@ function OS2DObject.__set(i, value){
 	super(i, value)
 }
 
+function OS2DObject.__get@childrenList()
+{
+	var childrenList = []
+	var cur = @firstChild
+	while(cur){
+		childrenList[] = cur
+		cur = cur.nextSibling
+	}
+	return childrenList
+}
+
 function OS2DObject.__iter(){
 	var next, i = @firstChild, 0
 	return function(){

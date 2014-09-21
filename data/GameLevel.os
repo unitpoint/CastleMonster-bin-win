@@ -29,16 +29,16 @@ ITEM_TYPE_MEDAL = 8
 			
 GameLevel = extends BaseGameLevel {
 	__object = {
-		wave: {
-			time: 0,
-			num: 0,
-			phase: 0,
-			maxAliveMonsters: 0,
-			completed: false,
-			params: null,
-			phaseParams: null,
-			phaseMonsters: 0,
-			phaseMonstersSpawned: 0
+		wave = {
+			time = 0,
+			num = 0,
+			phase = 0,
+			maxAliveMonsters = 0,
+			completed = false,
+			params = null,
+			phaseParams = null,
+			phaseMonsters = 0,
+			phaseMonstersSpawned = 0
 		},
 		wavePhaseMonstersSpawned = 0,
 		time = 0,
@@ -48,7 +48,13 @@ GameLevel = extends BaseGameLevel {
 		excludedSpawnAreas = [],
 		monsterSide = 0,
 		useMonstersBattle = false,
-		usePathDebug: true,
+		usePathDebug = false,
+		bloodUsedList = [],
+		monsterIdleTime = 0,
+		monsterIdleMinDist = 100,
+		monsterIdleMaxDist = 200,
+		checkWaveTime = 0,
+		waveCompletedInProgress = false,
 	},
 	
 	__construct = function(p_level, p_invasion, p_day){
@@ -72,7 +78,7 @@ GameLevel = extends BaseGameLevel {
 			pivot = vec2(0, 0),
 			startContentOffs = vec2(0, 0),
 		}
-		@debugDraw = DEBUG // @view must be already created
+		// @debugDraw = DEBUG // @view must be already created
 		
 		@layers = []
 		for(var i = 0; i < LAYER.COUNT; i++){
@@ -106,20 +112,7 @@ GameLevel = extends BaseGameLevel {
 		
 		@initLevelPhysics()
 		
-		@ui = Actor().attrs {
-			priority = 10,
-			parent = this,
-			pos = vec2(0, 0),
-			pivot = vec2(0, 0),
-			size = @size
-		}
-		
-		@moveJoystick = Joystick().attrs {
-			// priority = 0,
-			parent = @ui,
-			pivot = vec2(-0.25, 1.25),
-			pos = vec2(0, @height),
-		}
+		@hud = LevelHud(this)
 		
 		@player = Player(this)
 		
@@ -419,13 +412,13 @@ GameLevel = extends BaseGameLevel {
 				// cm.log("[findBestSpawnArea] i "+i+", p: "+p.x+" "+p.y+", dist "+dist+", best "+bestNum+", dist "+bestDist);
 			}
 		}
-		print("[findBestSpawnArea] areas "..#list..", best "..bestNum..", dist "..bestDist)
+		// print("[findBestSpawnArea] areas "..#list..", best "..bestNum..", dist "..bestDist)
 		@excludedSpawnAreas[] = bestSpawnArea
 		return bestSpawnArea
 	},
 	
 	startWave = function(day, phase, maxAliveMonsters){
-		// print "startWave"
+		print "startWave: ${day}, ${phase}, ${maxAliveMonsters}"
 		@wave.time = @time
 		@wave.day = day
 		@wave.phase = phase
@@ -480,7 +473,7 @@ GameLevel = extends BaseGameLevel {
 			printBackTrace(ent.debugBackTrace)
 			return
 		}
-		ent.classname != "Bullet" && print("deleteEntity ${ent.classname}#${ent.__id}: ${ent.desc.image.id}")
+		// ent.classname != "Bullet" && print("deleteEntity ${ent.classname}#${ent.__id}: ${ent.desc.image.id}")
 		@destroyEntityPhysics(ent)
 		ent.detach()
 		ent.isEntDead = true
@@ -497,7 +490,32 @@ GameLevel = extends BaseGameLevel {
 		@deleteEntity(ent)
 	},
 	
-	spawnMonster: function(params, spawnArea){
+	createBlood = function(ent, count, params, force){
+		for(var i, item in @bloodUsedList){
+			if(@time - item.time > 0.3){
+				delete @bloodUsedList[i]
+				continue
+			}
+			if(!force && item.ent == ent){
+				return
+			}
+		}
+		@bloodUsedList[] = {time = @time, ent = ent}
+		
+		var pos = ent.pos
+		for(var i = 0; i < count; i++){
+			Blood(this, extend({
+				pos = pos,
+			}, params))
+		}
+		var list = @layers[LAYER.BLOOD]
+		while(#list > 100){
+			// print "too many bloods: ${#list}, ${list[0]}"
+			@deleteEntity(list[0])
+		}
+	},
+	
+	spawnMonster = function(params, spawnArea){
 		spawnArea || spawnArea = @findBestSpawnArea()
 		@useMonstersBattle && @monsterSide = (@monsterSide + 1) % 2
 		// print "spawnMonster: ${params}, pos: ${@randAreaPos(spawnArea, -10)}"
@@ -515,13 +533,183 @@ GameLevel = extends BaseGameLevel {
 		// @layers[LAYER.MONSTERS].addChild(m)
 	},
 	
+	animRecover = function(imageId, p1, p2, p3, p4, callback){
+		var cubicPoints = [p1, p2, p3, p4]
+		var solveCubic = function(t){
+			var t2 = t * t
+			var t3 = t * t2
+			
+			var x = (cubicPoints[0].x + t * (-cubicPoints[0].x * 3 + t * (3 * cubicPoints[0].x-
+					cubicPoints[0].x*t)))+t*(3*cubicPoints[1].x+t*(-6*cubicPoints[1].x+
+					cubicPoints[1].x*3*t))+t2*(cubicPoints[2].x*3-cubicPoints[2].x*3*t)+
+					cubicPoints[3].x * t3
+				
+			var y = (cubicPoints[0].y+t*(-cubicPoints[0].y*3+t*(3*cubicPoints[0].y-
+					cubicPoints[0].y*t)))+t*(3*cubicPoints[1].y+t*(-6*cubicPoints[1].y+
+					cubicPoints[1].y*3*t))+t2*(cubicPoints[2].y*3-cubicPoints[2].y*3*t)+
+					cubicPoints[3].y * t3
+			
+			return vec2(x, y)
+		}
+		
+		var sprite = Sprite().attrs {
+			resAnim = res.getResAnim(imageId),
+			parent = @hud, // @layers[LEVEL.EFFECTS]
+			pos = cubicPoints[0],
+			pivot = vec2(0.5, 0.5),
+		}
+		
+		var delayTime = math.random(0, 0.5)
+		var pathDuration = math.random(1.5, 2)
+		var level = this
+		sprite.addTimeout(delayTime, function(){
+			var pathStartTime = level.time
+			var updateHandle = sprite.addUpdate(function(){
+				var t = (level.time - pathStartTime) / pathDuration
+				if(t >= 1){
+					sprite.removeUpdate(updateHandle)
+					t = 1
+				}
+				sprite.pos = solveCubic(t)
+			})
+		})
+		sprite.addTimeout(delayTime + pathDuration - 0.4, function(){
+			sprite.addTweenAction {
+				duration = 0.4,
+				opacity = 0,
+				detachTarget = true,
+				doneCallback = callback
+			}
+		})
+	},
+			
+	recoverPlayer = function(callback){
+		var self = this
+		var meatPerHealth = @wave.params.meatPerHealth
+		var moneyPerArmor = @wave.params.moneyPerArmor
+		var healthToRecover = math.min(playerData.healthDamaged, playerData.meat / meatPerHealth)
+		var armorToRecover = math.min(playerData.armorDamaged, playerData.money / moneyPerArmor)
+		
+		var animMeat = function(count, maxStepCount, dt){
+			var stepCount = math.min(maxStepCount, count)
+			var first = true
+			for(var i = 0; i < stepCount; i++){						
+				self.animRecover("meat", 
+						vec2(0, 0), // self.hud.meatImage, 
+						vec2(self.width*1.0, self.height*0.3),
+						vec2(self.width*0.1, self.height*0.4),
+						self.hud.face.pos,
+						function(){
+							if(first){
+								self.player.onHappy()
+								self.hud.onHappy()
+								first = false
+							}
+							playerData.healthRecovered++;								
+							playerData.healthRecoverMeatUsed += meatPerHealth
+							if(--count <= 0 && callback){
+								// cm.playerData.meat = cm.round(cm.playerData.meat);
+								callback()
+								callback = null
+							}
+							// checkFinished();
+						}
+					)
+			}
+			if((count - stepCount) > 0){
+				@addTimeout(dt, function(){ animMeat(count - stepCount, maxStepCount, dt, callback) })
+			}
+		}
+		
+		var animMoney = function(count, maxStepCount, dt, callback){
+			var stepCount = math.min(maxStepCount, count)
+			var first = true
+			for(var i = 0; i < stepCount; i++){						
+				self.animRecover("money", 
+						vec2(self.width, 0), // self.hud.moneyImage, 
+						vec2(self.width*0.0, self.height*1.0),
+						vec2(self.width*0.9, self.height*-0.7),
+						self.hud.armor.pos,
+						function(){
+							if(first){
+								self.player.onHappy()
+								self.hud.onHappy()
+								first = false
+							}
+							playerData.armorRecovered++
+							playerData.armorRecoverMoneyUsed += moneyPerArmor
+							if(--count <= 0 && callback){
+								// cm.playerData.money = cm.round(cm.playerData.money);
+								callback()
+								callback = null
+							}
+							// checkFinished();
+						}
+					);
+			}
+			if((count - stepCount) > 0){
+				@addTimeout(dt, function(){ animMoney(count - stepCount, maxStepCount, dt, callback) })
+			}
+		}
+		
+		var runAnim = function(func, count, callback){
+			if(count > 0){
+				var maxSteps = 20.0
+				var dt = 0.300
+				var maxTime = clamp(5 * count / 0.1, 1, 5)
+				var steps = math.min(count, maxSteps)
+				if(dt * steps > maxTime){
+					dt = maxTime / steps
+				}
+				func(count, math.ceil(count / steps), dt, callback)
+				// cm.log('runAnim', count, count / steps, dt, func)
+			}else{
+				callback()
+			}
+		};
+		
+		runAnim(animMoney, armorToRecover, function(){
+			runAnim(animMeat, healthToRecover, function(){
+				if(armorToRecover > 0 || healthToRecover > 0){
+					self.player.onHappy()
+					self.hud.onHappy()
+				}
+				callback()
+			})
+		})
+	},
+	
+	onWaveCompleted = function(){
+		@waveCompletedInProgress && return;
+		@waveCompletedInProgress = true
+		@addTimeout(1, function(){
+			@recoverPlayer(function(){
+				playerData.daysCompleted++
+				/* var dayResult = {
+					'level' = self.params.level, 
+					'invasion' = self.params.invasion, 
+					'day' = self.wave.day,
+					'json_data' = $.JSON.encode(self.getDayResult())
+				} */
+				// TODO: save progress
+					
+				@params.day++
+				var dayParams = @getDayParams(@params.level, @params.invasion, @params.day)
+				print "new day: "..dayParams
+				@applyDayParams(dayParams)
+				@startWave(@params.day, 0)
+				@waveCompletedInProgress = false
+			}.bind(this))
+		}.bind(this))
+	},
+	
 	spawnWaveMonsters = function(){
 		if(@wave.completed){
 			return false
 		}
 		var count = math.min(@wave.phaseMonsters - @wave.phaseMonstersSpawned, 
 				@wave.maxAliveMonsters - #@layers[LAYER.MONSTERS])
-		print "spawnWaveMonsters: ${count}"
+		// print "spawnWaveMonsters: ${count}"
 		if(count > 0){				
 			if(@wave.phaseMonsters >= 10 
 				&& @wave.phaseMonsters - @wave.phaseMonstersSpawned - count <= 1)
@@ -536,7 +724,7 @@ GameLevel = extends BaseGameLevel {
 			var monster
 			var spawnRandMonster = @wave.phaseParams.monster[0] !== null
 			count = math.min(5, count)
-			/* debug */ count *= 10 // count = 1
+			/* debug */ // count *= 10 // count = 1
 			for(var i = 0; i < count; i++){
 				if(i == 0 || spawnRandMonster){
 					if(spawnRandMonster){
@@ -563,7 +751,7 @@ GameLevel = extends BaseGameLevel {
 				}
 				@spawnMonster(monster, spawnArea)
 				@wavePhaseMonstersSpawned++
-				// cm.log("[wave spawn step] spawned "+@wavePhaseMonstersSpawned)
+				// print("[wave spawn step] spawned "+@wavePhaseMonstersSpawned)
 			}
 			@wave.phaseMonstersSpawned += count
 
@@ -669,7 +857,68 @@ GameLevel = extends BaseGameLevel {
 		@createPhysicsWorld(@view.size)
 	},
 	
+	checkWavePhase = function(){
+		if(@time - @checkWaveTime > 1){
+			@checkWaveTime = @time
+			
+			var wave = @wave.params
+			var phase = @wave.phaseParams
+			
+			if(!@wave.completed){
+				@spawnWaveMonsters()
+				return
+			}
+			var curMonsters = #@layers[LAYER.MONSTERS]
+			if(phase.next){
+				if(phase.next.delaySec && @time - @wave.time < phase.next.delaySec){
+					return
+				}
+				if(phase.next.aliveMonsters && curMonsters > phase.next.aliveMonsters){
+					return
+				}
+			}
+			if(@wave.phase >= wave.phases.length-1){
+				/* 
+				var p, m = @player
+				print("[checkWavePhase] "+curMonsters
+					+(curMonsters == 1 ? ", m: "+(m=@layers[@LAYER.MONSTERS].childrenList[0]).desc.image.id
+						+ ", ["+(m.x + m.width / 2)+","+(m.y + m.height / 2)+"]"
+						+ ", p: ["+(p.x + p.width / 2)+","+(p.y + p.height / 2)+"]"
+						: ""));
+				*/
+				if(curMonsters == 0){
+					@onWaveCompleted()
+				}
+			}else{
+				@startWave(@wave.day, @wave.phase+1)
+			}
+		}
+	},
+	
+	checkMonsterIdleSound = function(){
+		if(@time - @monsterIdleTime >= 2){
+			@monsterIdleTime = @time
+			var bestDist, bestMonster = 99999999999
+			var playerPos = @player.pos
+			for(var i, monster in @layers[LAYER.MONSTERS]){
+				if(monster.playIdleSound && !@isEntityDead(monster)){
+					var dist = #(monster.pos - playerPos)
+					if(dist >= @monsterIdleMinDist && dist <= @monsterIdleMaxDist && bestDist > dist){
+						bestDist = dist
+						bestMonster = monster
+					}
+				}
+			}
+			if(bestMonster){
+				bestMonster.playIdleSound()
+				@hud.onAlert()
+			}
+		}
+	},
+	
 	updateCamera: function(ev){
+		@player || return;
+		
 		var idealPos = @size / 2 - @player.pos
 		var pos = @view.pos
 		var move = (idealPos - pos) * 0.25 * ev.dt // (ev.dt * 2)
@@ -736,12 +985,25 @@ GameLevel = extends BaseGameLevel {
 		}
 		
 		@player.update(ev)
-		for(var _, layer in @layers){
+		for(var _, monster in @layers[LAYER.MONSTERS]){
+			monster.update(ev)
+		}
+		/* for(var _, layer in @layers){
 			for(var _, child in layer){
 				"update" in child && child.update(ev)
 			}
-		}
+		} */
+
+		// @updateActivatedItems()
+		@checkWavePhase()
+		@checkMonsterIdleSound()
+		
 		@updatePhysics(ev.dt)
 		@updateCamera(ev)
+		@hud.update(ev)
+	},
+	
+	playSound = function(params){
+		
 	},
 }
