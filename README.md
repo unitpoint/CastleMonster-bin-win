@@ -2,7 +2,7 @@
 
 Run CastleMonster.exe file to start this example.
 
-[![Opensource CastleMonster example made with OS2D](https://raw.githubusercontent.com/unitpoint/CastleMonster-bin-win/master/CastleMonster-youtube.jpg)](http://www.youtube.com/watch?v=a4afnUWjVR4)
+[![Opensource CastleMonster example made with OS2D](https://raw.githubusercontent.com/unitpoint/CastleMonster-bin-win/master/CastleMonster-youtube.jpg)](http://www.youtube.com/watch?v=YCaGgk8xEKA)
 
 Open source code of this example here https://github.com/unitpoint/CastleMonster
 
