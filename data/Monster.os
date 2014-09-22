@@ -198,7 +198,7 @@ Monster = extends Entity {
 						var node = self.path[i]
 						var pos = level.tileToEntityPos(node.x, node.y)
 						Sprite().attrs {
-							resAnim = res.getResAnim("dot"),
+							resAnim = res.get("dot"),
 							parent = level.layers[LAYER.PATH],
 							pos = pos,
 							pivot = vec2(0.5, 0.5),

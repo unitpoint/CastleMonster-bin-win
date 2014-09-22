@@ -44,7 +44,7 @@ Entity = extends BaseEntity {
 		}			
 		
 		@attrs {
-			resAnim = res.getResAnim(params.image.id),
+			resAnim = res.get(params.image.id),
 			// parent = @level.layers[LAYER.MONSTERS],
 			pos = pos,
 			pivot = vec2(0.5, 0.5),

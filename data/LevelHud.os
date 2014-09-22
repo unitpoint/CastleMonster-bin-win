@@ -32,7 +32,7 @@ LevelHud = extends Actor {
 		
 		var pad = 2
 		@face = Sprite().attrs {
-			resAnim = res.getResAnim("player-hud-face"),
+			resAnim = res.get("player-hud-face"),
 			// priority = 0,
 			parent = this,
 			pivot = vec2(1, 1),
@@ -46,7 +46,7 @@ LevelHud = extends Actor {
 		@face.height = @face.height + @faceBar.height + pad
 		
 		@armor = Sprite().attrs {
-			resAnim = res.getResAnim("player-hud-armor"),
+			resAnim = res.get("player-hud-armor"),
 			// priority = 0,
 			parent = this,
 			pivot = vec2(0, 1),

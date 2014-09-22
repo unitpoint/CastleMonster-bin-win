@@ -139,5 +139,9 @@ DAY_COUNT = 30
 FORCE_SCALE = 20 // TO_PHYS_SCALE * 200
 PLAYER_FORCE_SCALE = 10 // TO_PHYS_SCALE * 100
 
+stage.addTimeout(1, function(){
+	splayer.play("awesome")
+})
+
 GameLevel(5, 1, 3).attachTo(stage)
 

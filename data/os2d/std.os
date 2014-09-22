@@ -377,9 +377,22 @@ function OS2DObject._unregisterExternalCallback(id, func){
 	delete @_externalCallbacks[id]
 }
 
-function OS2DObject._unregisterAllExternalCallbacks(){
+function OS2DObject.__get@_externalEventCallbacks(){
+	@setProperty("_externalEventCallbacks", {})
+	return @_externalEventCallbacks
+}
+
+function OS2DObject._registerExternalEventCallback(id, func){
+	@_externalEventCallbacks[id] = func
+}
+
+function OS2DObject._unregisterExternalEventCallback(id, func){
+	delete @_externalEventCallbacks[id]
+}
+
+function OS2DObject._unregisterAllExternalEventCallbacks(){
 	// @_externalCallbacks = {}
-	delete @_externalCallbacks
+	delete @_externalEventCallbacks
 }
 
 function OS2DObject.__get@_externalTweens(){

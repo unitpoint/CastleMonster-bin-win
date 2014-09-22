@@ -72,7 +72,7 @@ GameLevel = extends BaseGameLevel {
 		@view = Sprite().attrs {
 			// name = "view",
 			priority = 0,
-			resAnim = resLevels.getResAnim(@levelName),
+			resAnim = levelRes.get(@levelName),
 			parent = this,
 			pos = vec2(0, 0),
 			pivot = vec2(0, 0),
@@ -90,7 +90,7 @@ GameLevel = extends BaseGameLevel {
 		
 		if(false){
 			var test = Sprite().attrs {
-				resAnim = res.getResAnim("breaks"),
+				resAnim = res.get("breaks"),
 				priority = 1000,
 				parent = this,
 				pivot = vec2(0.5, 0.5),
@@ -100,7 +100,7 @@ GameLevel = extends BaseGameLevel {
 			test.scale = @height / test.height
 			
 			test = Sprite().attrs {
-				resAnim = res.getResAnim("scratch"),
+				resAnim = res.get("scratch"),
 				priority = 1000,
 				parent = this,
 				pivot = vec2(0, 0),
@@ -553,7 +553,7 @@ GameLevel = extends BaseGameLevel {
 		}
 		
 		var sprite = Sprite().attrs {
-			resAnim = res.getResAnim(imageId),
+			resAnim = res.get(imageId),
 			parent = @hud, // @layers[LEVEL.EFFECTS]
 			pos = cubicPoints[0],
 			pivot = vec2(0.5, 0.5),
