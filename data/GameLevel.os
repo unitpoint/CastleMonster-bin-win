@@ -120,28 +120,95 @@ GameLevel = extends BaseGameLevel {
 		// @movePlayer(vec2(0.001, 0.001))
 		
 		@keyPressed = {}
-		var keyboardEvent = function(ev){
-			var pressed = ev.type == KeyboardEvent.DOWN
-			if(ev.scancode == KeyboardEvent.SCANCODE_LEFT || ev.scancode == KeyboardEvent.SCANCODE_A){
-				@keyPressed.left = pressed
-				return
+		if(PLATFORM == "windows"){
+			var moveJoystickActivated = false
+			var keyboardEvent = function(ev){
+				var pressed = ev.type == KeyboardEvent.DOWN
+				if(ev.scancode == KeyboardEvent.SCANCODE_LEFT || ev.scancode == KeyboardEvent.SCANCODE_A){
+					@keyPressed.left = pressed
+				}
+				if(ev.scancode == KeyboardEvent.SCANCODE_RIGHT || ev.scancode == KeyboardEvent.SCANCODE_D){
+					@keyPressed.right = pressed
+				}
+				if(ev.scancode == KeyboardEvent.SCANCODE_UP || ev.scancode == KeyboardEvent.SCANCODE_W){
+					@keyPressed.up = pressed
+				}
+				if(ev.scancode == KeyboardEvent.SCANCODE_DOWN || ev.scancode == KeyboardEvent.SCANCODE_S){
+					@keyPressed.down = pressed
+				}
+				var dx, dy = 0, 0
+				if(@keyPressed.left) dx--
+				if(@keyPressed.right) dx++
+				if(@keyPressed.up) dy--
+				if(@keyPressed.down) dy++
+				if(dx != 0 || dy != 0){
+					var dir = vec2(dx, dy).normalizeTo(100)
+					if(!moveJoystickActivated){
+						moveJoystickActivated = true
+						@hud.moveJoystick.dispatchEvent {
+							type = TouchEvent.START,
+							localPosition = @hud.moveJoystick.size/2 + dir
+						}
+					}else{
+						@hud.moveJoystick.dispatchEvent {
+							type = TouchEvent.MOVE,
+							localPosition = @hud.moveJoystick.size/2 + dir
+						}
+					}
+				}else if(moveJoystickActivated){
+					moveJoystickActivated = false
+					@hud.moveJoystick.dispatchEvent {
+						type = TouchEvent.END,
+						localPosition = @hud.moveJoystick.size/2
+					}
+				}
+			}.bind(this)
+			stage.addEventListener(KeyboardEvent.DOWN, keyboardEvent)
+			stage.addEventListener(KeyboardEvent.UP, keyboardEvent)
+
+			var aim = Sprite().attrs {
+				resAnim = res.get("aim"),
+				pivot = vec2(0.5, 0.5),
+				pos = @size/2,
+				parent = this
 			}
-			if(ev.scancode == KeyboardEvent.SCANCODE_RIGHT || ev.scancode == KeyboardEvent.SCANCODE_D){
-				@keyPressed.right = pressed
-				return
-			}
-			if(ev.scancode == KeyboardEvent.SCANCODE_UP || ev.scancode == KeyboardEvent.SCANCODE_W){
-				@keyPressed.up = pressed
-				return
-			}
-			if(ev.scancode == KeyboardEvent.SCANCODE_DOWN || ev.scancode == KeyboardEvent.SCANCODE_S){
-				@keyPressed.down = pressed
-				return
-			}
+			var fireUpdate = null
+			var toFireJoystickLocalPos = function(){
+				return @player ? @hud.fireJoystick.size/2 + (aim.pos 
+									- @view.pos - @player.pos)/3 : @hud.fireJoystick.size/2
+			}.bind(this)
+			
+			@addEventListener(TouchEvent.START, function(ev){
+				if(ev.target != @hud.fireJoystick && ev.target != @hud.moveJoystick){
+					@hud.fireJoystick.dispatchEvent {
+						type = TouchEvent.START,
+						localPosition = toFireJoystickLocalPos()
+					}
+					fireUpdate = @addUpdate(function(){
+						@hud.fireJoystick.dispatchEvent { 
+							type = TouchEvent.MOVE,
+							localPosition = toFireJoystickLocalPos()
+						}
+					}.bind(this))
+				}
+			}.bind(this))
+			
+			@addEventListener(TouchEvent.MOVE, function(ev){
+				aim.pos = ev.localPosition
+			}.bind(this))
+			
+			@addEventListener(TouchEvent.END, function(ev){
+				if(fireUpdate){
+					@removeUpdate(fireUpdate); fireUpdate = null
+					
+					@hud.fireJoystick.dispatchEvent { 
+						type = TouchEvent.END,
+						localPosition = toFireJoystickLocalPos()
+					}
+				}
+			}.bind(this))
 		}
-		@addEventListener(KeyboardEvent.DOWN, keyboardEvent.bind(this))
-		@addEventListener(KeyboardEvent.UP, keyboardEvent.bind(this))
-		
+				
 		@addUpdate(@update.bind(this))
 		
 		// @activateItem(playerData.defaultWeaponItem)
@@ -508,11 +575,15 @@ GameLevel = extends BaseGameLevel {
 				pos = pos,
 			}, params))
 		}
-		var list = @layers[LAYER.BLOOD]
-		while(#list > 100){
+		var list = @layers[LAYER.BLOOD].childrenList
+		var count, maxCount = #list, 200
+		for(var i = count - maxCount - 1; i >= 0; i--){
+			list[i].fadeOut()
+		}
+		/* while(#list > 10){
 			// print "too many bloods: ${#list}, ${list[0]}"
 			@deleteEntity(list[0])
-		}
+		} */
 	},
 	
 	spawnMonster = function(params, spawnArea){
@@ -534,20 +605,19 @@ GameLevel = extends BaseGameLevel {
 	},
 	
 	animRecover = function(imageId, p1, p2, p3, p4, callback){
-		var cubicPoints = [p1, p2, p3, p4]
 		var solveCubic = function(t){
 			var t2 = t * t
 			var t3 = t * t2
 			
-			var x = (cubicPoints[0].x + t * (-cubicPoints[0].x * 3 + t * (3 * cubicPoints[0].x-
-					cubicPoints[0].x*t)))+t*(3*cubicPoints[1].x+t*(-6*cubicPoints[1].x+
-					cubicPoints[1].x*3*t))+t2*(cubicPoints[2].x*3-cubicPoints[2].x*3*t)+
-					cubicPoints[3].x * t3
+			var x = (p1.x + t * (-p1.x * 3 + t * (3 * p1.x-
+					p1.x*t)))+t*(3*p2.x+t*(-6*p2.x+
+					p2.x*3*t))+t2*(p3.x*3-p3.x*3*t)+
+					p4.x * t3
 				
-			var y = (cubicPoints[0].y+t*(-cubicPoints[0].y*3+t*(3*cubicPoints[0].y-
-					cubicPoints[0].y*t)))+t*(3*cubicPoints[1].y+t*(-6*cubicPoints[1].y+
-					cubicPoints[1].y*3*t))+t2*(cubicPoints[2].y*3-cubicPoints[2].y*3*t)+
-					cubicPoints[3].y * t3
+			var y = (p1.y+t*(-p1.y*3+t*(3*p1.y-
+					p1.y*t)))+t*(3*p2.y+t*(-6*p2.y+
+					p2.y*3*t))+t2*(p3.y*3-p3.y*3*t)+
+					p4.y * t3
 			
 			return vec2(x, y)
 		}
@@ -555,7 +625,7 @@ GameLevel = extends BaseGameLevel {
 		var sprite = Sprite().attrs {
 			resAnim = res.get(imageId),
 			parent = @hud, // @layers[LEVEL.EFFECTS]
-			pos = cubicPoints[0],
+			pos = p1,
 			pivot = vec2(0.5, 0.5),
 		}
 		
@@ -616,7 +686,7 @@ GameLevel = extends BaseGameLevel {
 						}
 					)
 			}
-			if((count - stepCount) > 0){
+			if(count - stepCount > 0){
 				@addTimeout(dt, function(){ animMeat(count - stepCount, maxStepCount, dt, callback) })
 			}
 		}
@@ -647,7 +717,7 @@ GameLevel = extends BaseGameLevel {
 						}
 					);
 			}
-			if((count - stepCount) > 0){
+			if(count - stepCount > 0){
 				@addTimeout(dt, function(){ animMoney(count - stepCount, maxStepCount, dt, callback) })
 			}
 		}

@@ -36,7 +36,7 @@ function randSign(){
 }
 
 function randTime(time, scale){
-	if(time[0]){
+	if(arrayOf(time)){
 		return math.random(time[0], time[1]) * (scale || 1)
 	}
 	return time * (1 + randSign()*0.1) * (scale || 1)

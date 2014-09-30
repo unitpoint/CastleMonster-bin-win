@@ -26,27 +26,62 @@ Blood = extends Entity {
 		// print "spawn blood: ${params}"
 		@initEntity(params)
 		
+		if(params.image.id == "blood-2"){
+			@opacity = 0.5
+		}
+		var normOpacity = @opacity
+		
 		@resAnimFrameNum = math.random(0, @resAnim.totalFrames)
 		@parent = @level.layers[LAYER.BLOOD]
 		
-		@addTweenAction {
-			name = "tween",
-			duration = math.random(3, 7),
-			scale = 1.3,
-			opacity = 0.8,
-			ease = Ease.QUAD_OUT,
-		}
+		var updateHandle = @addUpdate(0.5, function(){
+			if(!@isAwake){
+				print "remove blood physics ${@__id}"
+				@level.destroyEntityPhysics(this)
+				@removeUpdate(updateHandle)
+				updateHandle = null
+			}
+		}.bind(this))
 		
-		@addTimeout(math.random(8, 15), function(){
+		@opacity = 0
+		@addAction(SequenceAction(
+			TweenAction {
+				name = "tween",
+				duration = 0.2,
+				opacity = normOpacity,
+			},
+			TweenAction {
+				name = "tween",
+				duration = math.random(3, 7),
+				scale = 1.3,
+				opacity = 0.8 * normOpacity,
+				ease = Ease.QUAD_OUT,
+			},
+		))
+		
+		@timeoutHandle = @addTimeout(math.random(60, 120), function(){
+			@timeoutHandle = null
 			@replaceTweenAction {
 				name = "tween",
 				opacity = 0,
-				duration = math.random(5, 10),
+				duration = math.random(10, 20),
 				doneCallback = function(){
 					@level.deleteEntity(this)
 				}.bind(this)
 			}
 		}.bind(this))
+	},
+	
+	fadeOut = function(){
+		if(@timeoutHandle){ @removeTimeout(@timeoutHandle); @timeoutHandle = null }
+		@replaceTweenAction {
+			name = "tween",
+			opacity = 0,
+			duration = 0.1,
+			doneCallback = function(){
+				@level.deleteEntity(this)
+			}.bind(this)
+		}
 	},
 	
 	onPhysicsContact = function(){

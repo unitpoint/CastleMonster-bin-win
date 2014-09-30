@@ -128,13 +128,13 @@ DayParams = extends Object {
             for(var _, name in ['level', 'invasion', 'day']){
                 if(isset(phase[name])){
                     if(objectOf(phase[name])){
-                        if(@name < phase[name][0] || @name > phase[name][1]){
+                        if(this[name] < phase[name][0] || this[name] > phase[name][1]){
                             delete @day_params['phases'][index]
                             cont = true
 							break
                         }
                         @["start_name"] = phase[name][0]
-                    }elseif(@name < phase[name]){
+                    }elseif(this[name] < phase[name]){
                         delete @day_params['phases'][index]
 						cont = true
 						break
@@ -238,11 +238,11 @@ DayParams = extends Object {
                     for(var _, name in ['level', 'invasion', 'day']){
                         if(isset(filter[name])){
                             if(objectOf(filter[name])){
-                                if(@name < filter[name][0] || @name > filter[name][1]){
+                                if(this[name] < filter[name][0] || this[name] > filter[name][1]){
                                     cont = true
 									break
                                 }
-                            }elseif(@name < filter[name]){
+                            }elseif(this[name] < filter[name]){
 								cont = true
 								break
                             }

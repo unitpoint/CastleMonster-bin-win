@@ -30,6 +30,13 @@ LevelHud = extends Actor {
 			pos = vec2(0, @height),
 		}
 		
+		@fireJoystick = Joystick().attrs {
+			// priority = 0,
+			parent = this,
+			pivot = vec2(1.25, 1.25),
+			pos = vec2(@width, @height),
+		}
+		
 		var pad = 2
 		@face = Sprite().attrs {
 			resAnim = res.get("player-hud-face"),
@@ -137,11 +144,11 @@ LevelHud = extends Actor {
 			@redArmorTime = 0
 			@armor.opacity = 1
 		}else if(t > 0){
-			if(@redArmorTime && time - @redArmorTime > 4){
+			if(@redArmorTime != 0 && time - @redArmorTime > 4){
 				@armor.opacity = 1
 			}else{
-				@redArmorTime || @redArmorTime = time
-				@armor.opacity = math.floor((time / 0.2) % 2) == 0 ? 1 : 0.5
+				@redArmorTime != 0 || @redArmorTime = time
+				@armor.opacity = math.floor((time / 0.2) % 2) == 0 ? 1 : 0.25
 			}
 		}else{
 			@redArmorTime = 0
@@ -173,11 +180,11 @@ LevelHud = extends Actor {
 			@redHealthTime = 0
 			@face.opacity = 1
 		}else if(t > 0){
-			if(@redHealthTime && time - @redHealthTime > 4){
+			if(@redHealthTime != 0 && time - @redHealthTime > 4){
 				@face.opacity = 1
 			}else{
-				@redHealthTime || @redHealthTime = time
-				@face.opacity = math.floor((time / 0.2) % 2) == 0 ? 1 : 0.5
+				@redHealthTime != 0 || @redHealthTime = time
+				@face.opacity = math.floor((time / 0.2) % 2) == 0 ? 1 : 0.25
 			}
 		}else{
 			@redHealthTime = 0

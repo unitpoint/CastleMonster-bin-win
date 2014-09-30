@@ -7,8 +7,8 @@ HealthProgressBar = extends Actor {
 		bar || bar = "hud-bar-bg"
 		fill || fill = "hud-bar-fill"
 		
-		bar is ResAnim || bar = res.get(bar)
-		fill is ResAnim || fill = res.get(fill)
+		bar is ResAnim || bar = res.get(bar) as ResAnim || throw "ResAnim required for ${bar}"
+		fill is ResAnim || fill = res.get(fill) as ResAnim || throw "ResAnim required for ${fill}"
 		
 		@bg = Sprite().attrs {
 			resAnim = bar,
