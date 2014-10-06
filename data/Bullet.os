@@ -70,9 +70,9 @@ Bullet = extends Entity {
 				duration = 0.5,
 				doneCallback = function(){
 					@level.deleteEntity(this)
-				}.bind(this)
+				}
 			}
-		}.bind(this))
+		})
 	},
 	
 	onPhysicsContact = function(contact, i){

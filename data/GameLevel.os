@@ -162,7 +162,7 @@ GameLevel = extends BaseGameLevel {
 						localPosition = @hud.moveJoystick.size/2
 					}
 				}
-			}.bind(this)
+			}
 			stage.addEventListener(KeyboardEvent.DOWN, keyboardEvent)
 			stage.addEventListener(KeyboardEvent.UP, keyboardEvent)
 
@@ -176,7 +176,7 @@ GameLevel = extends BaseGameLevel {
 			var toFireJoystickLocalPos = function(){
 				return @player ? @hud.fireJoystick.size/2 + (aim.pos 
 									- @view.pos - @player.pos)/3 : @hud.fireJoystick.size/2
-			}.bind(this)
+			}
 			
 			@addEventListener(TouchEvent.START, function(ev){
 				if(ev.target != @hud.fireJoystick && ev.target != @hud.moveJoystick){
@@ -189,13 +189,13 @@ GameLevel = extends BaseGameLevel {
 							type = TouchEvent.MOVE,
 							localPosition = toFireJoystickLocalPos()
 						}
-					}.bind(this))
+					})
 				}
-			}.bind(this))
+			})
 			
 			@addEventListener(TouchEvent.MOVE, function(ev){
 				aim.pos = ev.localPosition
-			}.bind(this))
+			})
 			
 			@addEventListener(TouchEvent.END, function(ev){
 				if(fireUpdate){
@@ -206,7 +206,7 @@ GameLevel = extends BaseGameLevel {
 						localPosition = toFireJoystickLocalPos()
 					}
 				}
-			}.bind(this))
+			})
 		}
 				
 		@addUpdate(@update.bind(this))
@@ -769,8 +769,8 @@ GameLevel = extends BaseGameLevel {
 				@applyDayParams(dayParams)
 				@startWave(@params.day, 0)
 				@waveCompletedInProgress = false
-			}.bind(this))
-		}.bind(this))
+			})
+		})
 	},
 	
 	spawnWaveMonsters = function(){

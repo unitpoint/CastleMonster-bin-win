@@ -90,7 +90,7 @@ Entity = extends BaseEntity {
 		@animUpdateHandle = @addUpdate(dt, function(ev){
 			animNum = (animNum + 1) % count
 			@resAnimFrameNum = animsMap[animNum]
-		}.bind(this))
+		})
 	},
 	stopAnim = function(){
 		@animUpdateHandle && @removeUpdate(@animUpdateHandle)

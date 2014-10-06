@@ -41,7 +41,7 @@ Blood = extends Entity {
 				@removeUpdate(updateHandle)
 				updateHandle = null
 			}
-		}.bind(this))
+		})
 		
 		@opacity = 0
 		@addAction(SequenceAction(
@@ -67,9 +67,9 @@ Blood = extends Entity {
 				duration = math.random(10, 20),
 				doneCallback = function(){
 					@level.deleteEntity(this)
-				}.bind(this)
+				}
 			}
-		}.bind(this))
+		})
 	},
 	
 	fadeOut = function(){
@@ -80,7 +80,7 @@ Blood = extends Entity {
 			duration = 0.1,
 			doneCallback = function(){
 				@level.deleteEntity(this)
-			}.bind(this)
+			}
 		}
 	},
 	

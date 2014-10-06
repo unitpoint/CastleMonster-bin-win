@@ -97,7 +97,7 @@
 		
 	</atlas>
 
-	<set path = "../data_debug/fonts/" />
+	<set path = "fonts/" />
 	<font file="normal.fnt"/>
 	<font id="big" file="huge.fnt"/>
 </resources>

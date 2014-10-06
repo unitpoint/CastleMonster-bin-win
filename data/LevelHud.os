@@ -69,7 +69,7 @@ LevelHud = extends Actor {
 		/* @addUpdate(0.3, function(){
 			@faceBar.progress = @faceBar.progress * 0.9
 			@armorBar.progress = @armorBar.progress * 0.8
-		}.bind(this)) */
+		}) */
 	},
 	
 	setFaceState = function(state, duration){
